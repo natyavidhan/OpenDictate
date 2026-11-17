@@ -2,6 +2,7 @@ package dev.natya.opendictate
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -51,7 +52,7 @@ class MainActivity : Activity() {
         col.addView(status)
         enableBtn = Button(this).apply {
             text = "Turn on OpenDictate in Accessibility"
-            setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+            setOnClickListener { showDisclosure() }
         }
         micBtn = Button(this).apply {
             text = "Allow microphone"
@@ -90,8 +91,41 @@ class MainActivity : Activity() {
             hint = "Tap here, then tap the pill…"; minLines = 3
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         })
+        col.addView(Button(this).apply {
+            text = "Privacy policy"
+            setOnClickListener { launch(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_URL))) }
+        })
 
         setContentView(ScrollView(this).apply { addView(col); isFillViewport = true })
+    }
+
+    /**
+     * Google Play's prominent disclosure for the AccessibilityService API: say what the service reads and where
+     * data goes, and open Accessibility settings only after the user agrees.
+     */
+    private fun showDisclosure() {
+        AlertDialog.Builder(this)
+            .setTitle("How OpenDictate uses Accessibility")
+            .setMessage(
+                "OpenDictate uses Android's Accessibility service to type for you in other apps. While it's on, it:\n\n" +
+                    "• Notices when a text field is focused and the keyboard is open, to show the mic button. " +
+                    "It never shows in password fields.\n" +
+                    "• Reads the text and cursor position of that field, to put your words in the right place.\n" +
+                    "• Types the transcribed text into the field.\n\n" +
+                    "Your voice is recorded only after you tap the button, until you stop. The recording is sent to " +
+                    "Groq (groq.com) with your API key to turn it into text and, if AI cleanup is on, to tidy it up. " +
+                    "When you start with “${cfg.agentName}, …”, the field's text, any selected text and the app's name " +
+                    "are also sent to Groq so the assistant can answer.\n\n" +
+                    "OpenDictate has no servers and no analytics. Nothing else leaves your phone, and each recording " +
+                    "is deleted once it's transcribed."
+            )
+            .setPositiveButton("Agree") { _, _ -> launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+            .setNegativeButton("No thanks", null)
+            .show()
+    }
+
+    private fun launch(intent: Intent) {
+        runCatching { startActivity(intent) }
     }
 
     private fun note(t: String) = TextView(this).apply {
@@ -165,5 +199,9 @@ class MainActivity : Activity() {
                 if (text.isEmpty() || text == v.second) remove(k) else putString(k, text)
             }
         }.apply()
+    }
+
+    companion object {
+        private const val PRIVACY_URL = "https://github.com/natyavidhan/OpenDictate/blob/main/PRIVACY.md"
     }
 }
