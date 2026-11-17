@@ -1,4 +1,5 @@
 Now called OpenDictate.
+• Fixes AI cleanup and the assistant: Groq retired Llama 3.3, so the default model is now openai/gpt-oss-120b
 • Explains what the accessibility service does before you turn it on
 • Deletes each recording as soon as it's transcribed
 • Privacy policy link in settings

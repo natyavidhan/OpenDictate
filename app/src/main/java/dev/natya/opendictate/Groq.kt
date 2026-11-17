@@ -43,6 +43,8 @@ object Groq {
                     .put(JSONObject().put("role", "system").put("content", system))
                     .put(JSONObject().put("role", "user").put("content", user))
             )
+        // gpt-oss reasons before answering; low effort is plenty for cleanup and roughly halves the latency.
+        if (model.startsWith("openai/gpt-oss")) body.put("reasoning_effort", "low")
         val conn = open("$BASE/chat/completions", key)
         conn.setRequestProperty("Content-Type", "application/json")
         conn.outputStream.use { it.write(body.toString().toByteArray()) }

@@ -58,7 +58,7 @@ Store screenshots come from the [Store screenshots](.github/workflows/screenshot
 | Setting | Default |
 | --- | --- |
 | Transcription model | `whisper-large-v3-turbo` |
-| Cleanup / assistant model | `llama-3.3-70b-versatile` |
+| Cleanup / assistant model | `openai/gpt-oss-120b` (sent with `reasoning_effort: low`) |
 | Assistant name | `Jarvis` |
 | Language | auto |
 | AI cleanup | on |
