@@ -1,4 +1,4 @@
-package dev.apkwhispr
+package dev.natya.opendictate
 
 import android.Manifest
 import android.accessibilityservice.AccessibilityService
@@ -25,7 +25,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
 import android.widget.Toast
-import dev.apkwhispr.BubbleView.State
+import dev.natya.opendictate.BubbleView.State
 import java.io.File
 import kotlin.concurrent.thread
 import kotlin.math.abs
@@ -191,9 +191,9 @@ class FlowService : AccessibilityService() {
     // ---------------------------------------------------------------- recording
 
     private fun startRec(): Boolean {
-        if (cfg.key.isBlank()) return fail("Add your Groq API key in the Whispr app")
+        if (cfg.key.isBlank()) return fail("Add your Groq API key in the OpenDictate app")
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            return fail("Grant microphone access in the Whispr app")
+            return fail("Grant microphone access in the OpenDictate app")
         target = focusedEditable()
         val r = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(this) else @Suppress("DEPRECATION") MediaRecorder()
         try {
@@ -279,7 +279,7 @@ class FlowService : AccessibilityService() {
         }
     }
 
-    /** "Hey Whispr, write a haiku" -> "write a haiku"; null when not addressed to the agent. */
+    /** "Hey Jarvis, write a haiku" -> "write a haiku"; null when not addressed to the agent. */
     private fun wakeCommand(text: String, name: String): String? {
         val m = Regex("^\\s*(?:hey|ok|okay)?[\\s,]*${Regex.escape(name)}\\b[\\s,.:!?-]*", RegexOption.IGNORE_CASE)
             .find(text) ?: return null
@@ -331,7 +331,7 @@ class FlowService : AccessibilityService() {
     }
 
     private fun copy(text: String) {
-        (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("Whispr", text))
+        (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("OpenDictate", text))
     }
 
     private fun fail(msg: String): Boolean {
@@ -340,7 +340,7 @@ class FlowService : AccessibilityService() {
     }
 
     companion object {
-        private const val TAG = "wisprdroid"
+        private const val TAG = "OpenDictate"
         /** Whisper's classic outputs on silence. */
         private val HALLUCINATIONS = setOf("thank you", "thanks for watching", "you", "bye", "thank you for watching")
     }

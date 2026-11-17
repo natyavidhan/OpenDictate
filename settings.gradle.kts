@@ -4,5 +4,5 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
-rootProject.name = "apkwhispr"
+rootProject.name = "OpenDictate"
 include(":app")

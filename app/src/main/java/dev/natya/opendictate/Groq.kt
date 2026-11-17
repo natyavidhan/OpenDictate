@@ -1,4 +1,4 @@
-package dev.apkwhispr
+package dev.natya.opendictate
 
 import org.json.JSONArray
 import org.json.JSONObject
@@ -12,7 +12,7 @@ object Groq {
     private const val BASE = "https://api.groq.com/openai/v1"
 
     fun transcribe(key: String, audio: File, model: String, language: String, prompt: String): String {
-        val boundary = "----whispr${System.nanoTime()}"
+        val boundary = "----opendictate${System.nanoTime()}"
         val conn = open("$BASE/audio/transcriptions", key)
         conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
         conn.outputStream.buffered().use { out ->

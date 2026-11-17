@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="Whispr"
+        android:label="OpenDictate"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/App"
         android:allowBackup="false">
@@ -23,7 +23,7 @@
         <service
             android:name=".FlowService"
             android:exported="true"
-            android:label="Whispr dictation"
+            android:label="OpenDictate"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

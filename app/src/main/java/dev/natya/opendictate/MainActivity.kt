@@ -1,4 +1,4 @@
-package dev.apkwhispr
+package dev.natya.opendictate
 
 import android.Manifest
 import android.app.Activity
@@ -41,7 +41,7 @@ class MainActivity : Activity() {
             setPadding(dp(20), dp(28), dp(20), dp(40))
         }
         col.addView(TextView(this).apply {
-            text = "Whispr"; textSize = 30f; typeface = Typeface.DEFAULT_BOLD
+            text = "OpenDictate"; textSize = 30f; typeface = Typeface.DEFAULT_BOLD
         })
         col.addView(note("Tap the floating pill above your keyboard to dictate, tap again to finish. " +
             "Hold it for push-to-talk. Drag it to move. Start with “${cfg.agentName}, …” to ask the assistant " +
@@ -50,7 +50,7 @@ class MainActivity : Activity() {
         status = TextView(this).apply { textSize = 15f; setPadding(0, dp(16), 0, dp(4)) }
         col.addView(status)
         enableBtn = Button(this).apply {
-            text = "Turn on Whispr in Accessibility"
+            text = "Turn on OpenDictate in Accessibility"
             setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
         }
         micBtn = Button(this).apply {
