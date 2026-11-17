@@ -3,10 +3,12 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.github.triplet.play")
 }
 
-// Play upload key, kept out of git: storeFile, storePassword, keyAlias, keyPassword.
-val uploadKey = Properties().apply {
+// Release secrets, kept out of git: the Play upload key (storeFile, storePassword, keyAlias, keyPassword)
+// and the path to the Play Developer API service account JSON (playServiceAccount).
+val secrets = Properties().apply {
     val f = rootProject.file("keystore.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
@@ -19,16 +21,16 @@ android {
         applicationId = "dev.natya.opendictate"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.3"
+        versionCode = 4
+        versionName = "0.4"
     }
 
     signingConfigs {
-        if (uploadKey.isNotEmpty()) create("upload") {
-            storeFile = rootProject.file(uploadKey.getProperty("storeFile"))
-            storePassword = uploadKey.getProperty("storePassword")
-            keyAlias = uploadKey.getProperty("keyAlias")
-            keyPassword = uploadKey.getProperty("keyPassword")
+        if (secrets.containsKey("storeFile")) create("upload") {
+            storeFile = rootProject.file(secrets.getProperty("storeFile"))
+            storePassword = secrets.getProperty("storePassword")
+            keyAlias = secrets.getProperty("keyAlias")
+            keyPassword = secrets.getProperty("keyPassword")
         }
     }
 
@@ -49,4 +51,11 @@ android {
     kotlinOptions { jvmTarget = "17" }
     dependenciesInfo { includeInApk = false; includeInBundle = false }
     packaging { resources { excludes += listOf("kotlin/**", "META-INF/**", "DebugProbesKt.bin") } }
+}
+
+// ./gradlew publishBundle uploads a release to internal testing; ./gradlew publishListing pushes src/main/play.
+play {
+    secrets.getProperty("playServiceAccount")?.let { serviceAccountCredentials.set(rootProject.file(it)) }
+    track.set("internal")
+    defaultToAppBundles.set(true)
 }

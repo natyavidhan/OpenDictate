@@ -1,0 +1,3 @@
+# Play listing text is uploaded as-is, and shell scripts run on Linux CI: keep both LF everywhere.
+app/src/main/play/**/*.txt text eol=lf
+*.sh text eol=lf

@@ -1,0 +1,19 @@
+OpenDictate puts a small mic button above your keyboard in every app. Tap it, say what you want to write, tap again, and your words appear in the text field, with the ums removed and the punctuation fixed.
+
+FEATURES
+• Works with any keyboard, in almost any app: chats, email, notes, browsers
+• Tap to dictate, or hold for push-to-talk
+• Fast, accurate transcription with Whisper models running on Groq
+• AI cleanup removes filler words, applies self-corrections ("at 3, no, 4" becomes "at 4") and fixes punctuation
+• Voice assistant: start with "Jarvis, …" to draft a reply, translate or rewrite. Select text first to change only that part
+• Custom dictionary for names and jargon
+• Choose your own models and edit the prompts
+• No ads, no tracking, open source
+
+WHAT YOU NEED
+A Groq API key. Groq has a free tier: create a key at console.groq.com and paste it into OpenDictate.
+
+YOUR DATA
+OpenDictate uses Android's Accessibility service only to notice when you're typing, show the mic button and insert your text. It never appears in password fields. Recordings go straight from your phone to Groq under your own API key and are deleted once transcribed. When you talk to the assistant, the field's text and any selected text are sent too, so it has context. OpenDictate has no servers of its own and no analytics.
+
+Source code and privacy policy: https://github.com/natyavidhan/OpenDictate
