@@ -1,0 +1,4 @@
+Now called OpenDictate.
+• Explains what the accessibility service does before you turn it on
+• Deletes each recording as soon as it's transcribed
+• Privacy policy link in settings

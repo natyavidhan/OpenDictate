@@ -22,6 +22,7 @@ Voice dictation for Android, modeled on [Wispr Flow](https://wisprflow.ai) and [
 3. Audio is recorded with `MediaRecorder` (AAC, 16 kHz, mono, 32 kbps) and uploaded to `/audio/transcriptions`.
 4. The transcript goes to `/chat/completions` for cleanup or an assistant response.
 5. Text is inserted at the cursor with `ACTION_SET_TEXT` + `ACTION_SET_SELECTION`. Fallback: `ACTION_PASTE`. If no field is focused, the text is copied to the clipboard.
+6. The recording is deleted once it has been transcribed. See the [privacy policy](PRIVACY.md) for exactly what is sent to Groq.
 
 ## Setup
 
@@ -40,6 +41,17 @@ Requires JDK 17 and Android SDK platform 36.
 ```
 
 Release builds are minified with R8. They're signed with the upload key from `keystore.properties` (gitignored; keys `storeFile`, `storePassword`, `keyAlias`, `keyPassword`) if it exists, otherwise with the debug key.
+
+## Publishing
+
+Google Play uploads use [Gradle Play Publisher](https://github.com/Triple-T/gradle-play-publisher) with a service account whose JSON key path is `playServiceAccount` in `keystore.properties`.
+
+```sh
+./gradlew publishBundle    # build and upload a release to internal testing (bump versionCode first)
+./gradlew publishListing   # upload the store listing in app/src/main/play
+```
+
+Store screenshots come from the [Store screenshots](.github/workflows/screenshots.yml) workflow, which drives the debug build on an emulator ([`scripts/screenshots.sh`](scripts/screenshots.sh)) and uploads the PNGs as an artifact.
 
 ## Configuration
 
