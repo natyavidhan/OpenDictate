@@ -61,6 +61,28 @@ pill() {
   adb shell input tap $((W - $(dp 10) - $(dp 40) / 2)) $((y + $(dp 40) / 2))
 }
 
+# Voice for the dictation step: the emulator's gRPC injectAudio API (stubs compiled from the emulator's own
+# proto), with the PulseAudio null sink as a fallback.
+EMU=${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}/emulator
+"$EMU/emulator" -version 2>/dev/null | head -1
+PROTO=$(find "$EMU" -name emulator_controller.proto 2>/dev/null | head -1)
+GRPC_PY=/tmp/grpc-venv/bin/python
+WKT=$("$GRPC_PY" -c 'import grpc_tools, os; print(os.path.join(os.path.dirname(grpc_tools.__file__), "_proto"))' 2>/dev/null)
+mkdir -p "$OUT/stubs"
+if [ -n "$PROTO" ] && "$GRPC_PY" -m grpc_tools.protoc -I "$(dirname "$PROTO")" -I "$WKT" \
+     --python_out="$OUT/stubs" --grpc_python_out="$OUT/stubs" "$PROTO"; then
+  echo "gRPC stubs compiled from $PROTO"
+else
+  echo "could not compile gRPC stubs (proto: ${PROTO:-not found})"
+fi
+ffmpeg -y -loglevel error -i "$SPEECH" -af apad=pad_dur=0.4 -ar 44100 -ac 1 -f s16le "$OUT/speech.pcm"
+speak() {
+  pactl list short source-outputs | sed 's/^/  pulse capture stream: /'
+  if "$GRPC_PY" scripts/inject_audio.py "$OUT/stubs" "$OUT/speech.pcm" 8554; then return 0; fi
+  echo "gRPC injection failed; falling back to the PulseAudio sink"
+  paplay --device=vmic "$SPEECH" || echo "paplay failed"
+}
+
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 # Clean status bar, and keep the soft keyboard visible.
@@ -147,7 +169,7 @@ sleep 4
 if [ -n "$KEY" ] && pill; then
   caption "Tap it and speak. It records only until the user taps it again."
   sleep 1
-  paplay --device=vmic "$SPEECH" || echo "paplay failed"
+  speak
   sleep 0.8
   pill
   caption "The Accessibility service types the transcription into the focused field."
@@ -177,21 +199,26 @@ adb logcat -d -s OpenDictate:D AndroidRuntime:E > "$OUT/logcat.txt"
 
 # ---------------------------------------------------------------- captions
 # Pads a caption band above the screen and draws each caption from its timestamp until the next one.
+# Each wrapped line is its own drawtext: newer ffmpeg draws a missing-glyph box at embedded line breaks.
 N=$(python3 - "$OUT" "$END" <<'PY'
 import pathlib, sys, textwrap
 out, end = pathlib.Path(sys.argv[1]), float(sys.argv[2])
 rows = [line.split("\t", 1) for line in (out / "captions.tsv").read_text().splitlines() if line]
-font, band = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 260
-parts = [f"[0:v]pad=iw:ih+{band}:0:{band}:color=0x111111[v0]"]
+font, band, size, step = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 260, 40, 54
+parts, n = [f"[0:v]pad=iw:ih+{band}:0:{band}:color=0x111111[v0]"], 0
 for i, (t, text) in enumerate(rows):
     start, stop = float(t), float(rows[i + 1][0]) if i + 1 < len(rows) else end
-    f = (out / "captions" / f"{i:02d}.txt").resolve()
-    f.write_text("\n".join(textwrap.wrap(text, 44)))
-    parts.append(f"[v{i}]drawtext=fontfile={font}:textfile={f}:fontcolor=white:fontsize=40:line_spacing=12:"
-                 f"x=(w-text_w)/2:y=({band}-text_h)/2:enable='between(t,{start:.2f},{stop:.2f})'[v{i + 1}]")
+    lines = textwrap.wrap(text, 44)
+    top = (band - (len(lines) * step - (step - size))) / 2
+    for j, line in enumerate(lines):
+        f = (out / "captions" / f"{i:02d}-{j}.txt").resolve()
+        f.write_text(line)
+        parts.append(f"[v{n}]drawtext=fontfile={font}:textfile={f}:fontcolor=white:fontsize={size}:"
+                     f"x=(w-text_w)/2:y={top + j * step:.0f}:enable='between(t,{start:.2f},{stop:.2f})'[v{n + 1}]")
+        n += 1
     (out / "frames" / "times.txt").open("a").write(f"{(start + stop) / 2:.2f}\n")
 (out / "filter.txt").write_text(";\n".join(parts))
-print(len(rows))
+print(n)
 PY
 )
 ffmpeg -y -loglevel error -i "$OUT/demo-raw.mp4" -filter_complex_script "$OUT/filter.txt" -map "[v$N]" \
