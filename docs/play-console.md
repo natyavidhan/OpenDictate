@@ -5,8 +5,7 @@ Draft answers for the forms Google only lets the developer fill in on the websit
 ## Store settings
 
 - **Category:** Productivity.
-- **Contact email:** required, and shown publicly on the listing. Use an address you're happy to publish.
-- **Website:** `https://github.com/natyavidhan/OpenDictate` (uploaded by `./gradlew publishListing`).
+- **Contact email and website:** already set through the Play API. Keep contact details out of `app/src/main/play`: Gradle Play Publisher replaces all of them at once, so a website file on its own wipes the email, and Play then refuses to save the listing.
 
 ## App content
 
