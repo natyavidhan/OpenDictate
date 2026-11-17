@@ -1,4 +1,4 @@
-# wisprdroid
+# OpenDictate
 
 Voice dictation for Android, modeled on [Wispr Flow](https://wisprflow.ai) and [OpenWhispr](https://github.com/OpenWhispr/openwhispr). Transcription and text processing run on [Groq](https://groq.com). Native Kotlin, no dependencies, ~33 KB APK.
 
@@ -32,14 +32,14 @@ Voice dictation for Android, modeled on [Wispr Flow](https://wisprflow.ai) and [
 
 ## Build
 
-Requires JDK 17 and Android SDK platform 35.
+Requires JDK 17 and Android SDK platform 36.
 
 ```sh
-./gradlew assembleRelease
-# output: app/build/outputs/apk/release/app-release.apk
+./gradlew bundleRelease     # Play Store: app/build/outputs/bundle/release/app-release.aab
+./gradlew assembleRelease   # sideload:   app/build/outputs/apk/release/app-release.apk
 ```
 
-Release builds are minified with R8 and signed with the debug key.
+Release builds are minified with R8. They're signed with the upload key from `keystore.properties` (gitignored; keys `storeFile`, `storePassword`, `keyAlias`, `keyPassword`) if it exists, otherwise with the debug key.
 
 ## Configuration
 

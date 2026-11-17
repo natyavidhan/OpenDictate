@@ -1,4 +1,4 @@
-package dev.apkwhispr
+package dev.natya.opendictate
 
 import android.content.Context
 
