@@ -128,6 +128,7 @@ class FlowService : AccessibilityService() {
         val off = cfg.bubbleOffset.takeIf { it != Int.MIN_VALUE } ?: -(bubble.h + bubble.dp(64f))
         lp.y = (anchor + off).coerceIn(bubble.dp(48f), screenH - bubble.h)
         runCatching { wm.updateViewLayout(bubble, lp) }
+        if (BuildConfig.DEBUG) Log.d(TAG, "pill y=${lp.y}") // scripts/screenshots.sh taps the pill from this
     }
 
     private fun setState(s: State) {
@@ -238,11 +239,12 @@ class FlowService : AccessibilityService() {
 
     private fun cancelRec() {
         endRec()
+        audio.delete()
         if (::bubble.isInitialized) setState(State.IDLE)
     }
 
     private fun stopRec() {
-        if (!endRec()) { setState(State.IDLE); return }
+        if (!endRec()) { audio.delete(); setState(State.IDLE); return }
         bubble.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
         setState(State.BUSY)
 
@@ -255,6 +257,7 @@ class FlowService : AccessibilityService() {
 
         thread {
             val result = runCatching { process(field, selected, app) }
+            audio.delete() // a recording never outlives its transcription (the privacy policy promises this)
             main.post {
                 setState(State.IDLE)
                 result.onSuccess { if (it.isNotBlank()) insert(it) }
