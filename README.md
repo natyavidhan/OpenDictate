@@ -51,7 +51,7 @@ Google Play uploads use [Gradle Play Publisher](https://github.com/Triple-T/grad
 ./gradlew publishListing   # upload the store listing in app/src/main/play
 ```
 
-Store screenshots come from the [Store screenshots](.github/workflows/screenshots.yml) workflow, which drives the debug build on an emulator ([`scripts/screenshots.sh`](scripts/screenshots.sh)) and uploads the PNGs as an artifact.
+Store screenshots come from the [Store screenshots](.github/workflows/screenshots.yml) workflow (`gh workflow run screenshots.yml`), which drives the debug build on an emulator ([`scripts/screenshots.sh`](scripts/screenshots.sh)) and uploads the PNGs as an artifact. The ones on the listing live in `app/src/main/play/listings/en-US/graphics/phone-screenshots`.
 
 ## Configuration
 
