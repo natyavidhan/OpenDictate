@@ -32,6 +32,6 @@ class Cfg(ctx: Context) {
         const val ASSISTANT_PROMPT = "assistant_prompt"
         const val DEF_AGENT = "Jarvis"
         const val DEF_STT = "whisper-large-v3-turbo"
-        const val DEF_LLM = "llama-3.3-70b-versatile"
+        const val DEF_LLM = "openai/gpt-oss-120b"
     }
 }
