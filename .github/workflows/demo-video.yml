@@ -4,10 +4,9 @@ name: Accessibility demo video
 # declaration asks for. scripts/demo-speech.wav is streamed into the emulator microphone over its gRPC
 # injectAudio API (PulseAudio null sink as a fallback), and the GROQ_API_KEY secret lets the dictation step
 # really transcribe.
+# Run it by hand: gh workflow run demo-video.yml (needs the GROQ_API_KEY secret for real dictation).
 on:
   workflow_dispatch:
-  push:
-    branches: [demo-video]
 
 permissions:
   contents: read

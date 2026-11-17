@@ -53,6 +53,8 @@ Google Play uploads use [Gradle Play Publisher](https://github.com/Triple-T/grad
 
 Store screenshots come from the [Store screenshots](.github/workflows/screenshots.yml) workflow (`gh workflow run screenshots.yml`), which drives the debug build on an emulator ([`scripts/screenshots.sh`](scripts/screenshots.sh)) and uploads the PNGs as an artifact. The ones on the listing live in `app/src/main/play/listings/en-US/graphics/phone-screenshots`.
 
+The video for Play's Accessibility API declaration comes from the [Accessibility demo video](.github/workflows/demo-video.yml) workflow (`gh workflow run demo-video.yml`). It records the disclosure, consent and a real dictation on an emulator, streaming [`scripts/demo-speech.wav`](scripts/demo-speech.wav) into the virtual microphone over the emulator's gRPC API, and needs a `GROQ_API_KEY` repository secret.
+
 ## Configuration
 
 | Setting | Default |
